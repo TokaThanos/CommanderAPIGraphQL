@@ -6,9 +6,9 @@ namespace CommanderGQL.GraphQL;
 
 public class Query
 {
-    public async Task<List<Platform>> GetPlatformsAsync([Service] IDbContextFactory<AppDbContext> dbContextFactory)
+    [UseProjection]
+    public IQueryable<Platform> GetPlatforms([Service] AppDbContext context)
     {
-        using var context = dbContextFactory.CreateDbContext();
-        return await context.Platforms.ToListAsync();
+        return context.Platforms;
     }
 }

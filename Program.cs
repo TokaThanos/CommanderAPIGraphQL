@@ -11,12 +11,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddPooledDbContextFactory<AppDbContext>(opt => opt.UseSqlServer
+        builder.Services.AddDbContextPool<AppDbContext>(opt => opt.UseSqlServer
             (builder.Configuration.GetConnectionString("CommanderConnectionString")));
         
         builder.Services
             .AddGraphQLServer()
-            .AddQueryType<Query>();
+            .AddQueryType<Query>()
+            .AddProjections();
 
         var app = builder.Build();
 
