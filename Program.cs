@@ -17,13 +17,24 @@ public class Program
             .CreateLogger();
 
         var builder = WebApplication.CreateBuilder(args);
-
         builder.Host.UseSerilog();
 
-        builder.Services.AddDbContextPool<AppDbContext>(opt => opt.UseSqlServer
-            (builder.Configuration.GetConnectionString("CommanderConnectionString"))
+        // Get DB_PASSWORD from environment variables
+        string? dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
+
+        if (string.IsNullOrEmpty(dbPassword))
+        {
+            Log.Error("DB_PASSWORD environment variable is not set. Exiting application.");
+            return; // Exit program if DB_PASSWORD is missing
+        }
+
+        // Read connection string and replace placeholder
+        string? connectionString = builder.Configuration.GetConnectionString("CommanderConnectionString")
+            ?.Replace("${DB_PASSWORD}", dbPassword);
+
+        builder.Services.AddDbContextPool<AppDbContext>(opt => opt.UseSqlServer(connectionString)
             .LogTo(Console.WriteLine, LogLevel.Information));
-        
+
         builder.Services
             .AddGraphQLServer()
             .AddQueryType<Query>()
@@ -42,5 +53,3 @@ public class Program
         app.Run();
     }
 }
-
-

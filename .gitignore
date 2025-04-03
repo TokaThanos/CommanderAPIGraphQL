@@ -17,6 +17,5 @@ Desktop.ini
 *.exe
 *.pdb
 *.dll.config
-*.json
 *.log
 *.env
