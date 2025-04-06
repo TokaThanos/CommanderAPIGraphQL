@@ -4,6 +4,9 @@
 .vscode/
 .vs/
 
+# Ignore Github settings
+.github/
+
 # Ignore compiled binaries and object files
 bin/
 obj/
