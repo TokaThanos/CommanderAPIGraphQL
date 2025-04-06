@@ -1,5 +1,4 @@
 using CommanderGQL.Configuration;
-using CommanderGQL.Data;
 using CommanderGQL.GraphQL;
 using CommanderGQL.GraphQL.Commands;
 using CommanderGQL.GraphQL.DataLoader;
@@ -25,15 +24,20 @@ public class Program
         builder.Services
             .AddGraphQLServer()
             .AddQueryType<Query>()
+            .AddMutationType<Mutation>()
+            .AddSubscriptionType<Subscription>()
             .AddType<PlatformType>()
             .AddType<CommandType>()
             .AddDataLoader<CommandByPlatformDataLoader>()
             .AddDataLoader<PlatformByIdDataLoader>()
             .AddFiltering()
             .AddSorting()
+            .AddInMemorySubscriptions()
             .ModifyRequestOptions(opts => opts.IncludeExceptionDetails = true);
 
         var app = builder.Build();
+
+        app.UseWebSockets();
 
         app.MapGraphQL();
 
