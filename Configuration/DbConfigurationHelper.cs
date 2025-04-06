@@ -8,7 +8,7 @@ namespace CommanderGQL.Configuration
         public static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
         {
             string connectionString = GetConnectionString(configuration);
-            services.AddDbContextPool<AppDbContext>(options =>
+            services.AddPooledDbContextFactory<AppDbContext>(options =>
                 options.UseSqlServer(connectionString));
         }
 

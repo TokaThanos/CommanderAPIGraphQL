@@ -2,9 +2,9 @@ using CommanderGQL.Configuration;
 using CommanderGQL.Data;
 using CommanderGQL.GraphQL;
 using CommanderGQL.GraphQL.Commands;
+using CommanderGQL.GraphQL.DataLoader;
 using CommanderGQL.GraphQL.Platforms;
 using GraphQL.Server.Ui.Voyager;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace CommanderGQL;
@@ -26,7 +26,12 @@ public class Program
             .AddGraphQLServer()
             .AddQueryType<Query>()
             .AddType<PlatformType>()
-            .AddType<CommandType>();
+            .AddType<CommandType>()
+            .AddDataLoader<CommandByPlatformDataLoader>()
+            .AddDataLoader<PlatformByIdDataLoader>()
+            .AddFiltering()
+            .AddSorting()
+            .ModifyRequestOptions(opts => opts.IncludeExceptionDetails = true);
 
         var app = builder.Build();
 
