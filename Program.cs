@@ -1,3 +1,4 @@
+using CommanderGQL.Configuration;
 using CommanderGQL.Data;
 using CommanderGQL.GraphQL;
 using CommanderGQL.GraphQL.Commands;
@@ -19,21 +20,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         builder.Host.UseSerilog();
 
-        // Get DB_PASSWORD from environment variables
-        string? dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
-
-        if (string.IsNullOrEmpty(dbPassword))
-        {
-            Log.Error("DB_PASSWORD environment variable is not set. Exiting application.");
-            return; // Exit program if DB_PASSWORD is missing
-        }
-
-        // Read connection string and replace placeholder
-        string? connectionString = builder.Configuration.GetConnectionString("CommanderConnectionString")
-            ?.Replace("${DB_PASSWORD}", dbPassword);
-
-        builder.Services.AddDbContextPool<AppDbContext>(opt => opt.UseSqlServer(connectionString)
-            .LogTo(Console.WriteLine, LogLevel.Information));
+        DbConfigurationHelper.ConfigureDatabase(builder.Services, builder.Configuration);
 
         builder.Services
             .AddGraphQLServer()
