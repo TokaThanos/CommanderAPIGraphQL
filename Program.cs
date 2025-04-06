@@ -1,3 +1,4 @@
+using CommanderGQL.Configuration;
 using CommanderGQL.Data;
 using CommanderGQL.GraphQL;
 using CommanderGQL.GraphQL.Commands;
@@ -17,13 +18,10 @@ public class Program
             .CreateLogger();
 
         var builder = WebApplication.CreateBuilder(args);
-
         builder.Host.UseSerilog();
 
-        builder.Services.AddDbContextPool<AppDbContext>(opt => opt.UseSqlServer
-            (builder.Configuration.GetConnectionString("CommanderConnectionString"))
-            .LogTo(Console.WriteLine, LogLevel.Information));
-        
+        DbConfigurationHelper.ConfigureDatabase(builder.Services, builder.Configuration);
+
         builder.Services
             .AddGraphQLServer()
             .AddQueryType<Query>()
@@ -42,5 +40,3 @@ public class Program
         app.Run();
     }
 }
-
-
