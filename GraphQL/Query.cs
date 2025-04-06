@@ -1,17 +1,26 @@
 using CommanderGQL.Data;
 using CommanderGQL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommanderGQL.GraphQL;
 
 public class Query
 {
-    public IQueryable<Platform> GetPlatforms([Service] AppDbContext context)
+    [UseFiltering]
+    [UseSorting]
+    public async Task<List<Platform>> GetPlatforms(
+        [Service] IDbContextFactory<AppDbContext> dbContextFactory)
     {
-        return context.Platforms;
+        await using var context = await dbContextFactory.CreateDbContextAsync();
+        return await context.Platforms.ToListAsync();
     }
 
-    public IQueryable<Command> GetCommands([Service] AppDbContext context)
+    [UseFiltering]
+    [UseSorting]
+    public async Task<List<Command>> GetCommands(
+        [Service] IDbContextFactory<AppDbContext> dbContextFactory)
     {
-        return context.Commands;
+        await using var context = await dbContextFactory.CreateDbContextAsync();
+        return await context.Commands.ToListAsync();
     }
 }
